@@ -1,13 +1,20 @@
-import React from 'react'
+import React,{useEffect} from 'react'
+import { task } from '../../../interfaces'
+import DailyTask from './DailyTask'
 interface props
 {
      setShowModal: React.Dispatch<React.SetStateAction<boolean>>
-
+     setUpdatetTask: React.Dispatch<React.SetStateAction<task | undefined>>
+     DailyTaks: task[]
 }
 
 
 
-function DayViewContainer({setShowModal}:props) {
+function DayViewContainer({setUpdatetTask,DailyTaks,setShowModal}:props) {
+
+  useEffect(()=>{
+    console.log(DailyTaks)
+  },[DailyTaks])
   return (
 
   <div style={{height:"92%"}} className='w-full  mothDayBoxShadow'>
@@ -17,27 +24,9 @@ function DayViewContainer({setShowModal}:props) {
         </div>
     </div>
 
-    <div className='w-full h-32 bg-blue-400  hover:bg-yellow-400 cursor-pointer duration-300 flex my-2'>
-      <div className='h-full w-1/5 flex items-center justify-around flex-col'>
-        <p className='text-2xl font-bold text-white'>From</p>
-        <p className='text-2xl font-bold text-white'>8:00</p>
-      </div>
-
-      <div className='h-full w-3/5 flex items-center justify-around flex-col'>
-
-        <div className='w-full h-full flex items-center justify-center'>
-            <p className='text-xl font-medium text-white'>sadassadhsiod asid sdasijd asdj asio dasiod iaosd iasod iasodu iasoj asiojd ioas d ioasj idoj siodj asiodj ai sdasiod </p>
-        </div>
-        
-      </div>
-
-      <div className='h-full w-1/5 flex items-center justify-around flex-col'>
-        <p className='text-2xl font-bold text-white'>From</p>
-        <p className='text-2xl font-bold text-white'>8:00</p>
-      </div>
-
-    </div>
-
+    {DailyTaks.map((task)=>{
+      return <DailyTask setUpdatetTask={setUpdatetTask} task={task}/>
+    })}
 
 
 

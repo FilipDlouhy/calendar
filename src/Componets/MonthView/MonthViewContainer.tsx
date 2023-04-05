@@ -1,8 +1,9 @@
 import React from 'react'
+import { task } from '../../../interfaces'
 interface props
 {
      setShowModal: React.Dispatch<React.SetStateAction<boolean>>
-
+     setUpdatetTask: React.Dispatch<React.SetStateAction<task | undefined>>
 }
 function MonthViewContainer({setShowModal}:props) {
   return (

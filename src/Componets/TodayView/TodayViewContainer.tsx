@@ -5,11 +5,12 @@ interface props
 {
      setShowModal: React.Dispatch<React.SetStateAction<boolean>>
      TodayTasks: task[]
-}
+     setUpdatetTask: React.Dispatch<React.SetStateAction<task | undefined>>
+    }
 
 
 
-function TodayViewContainer({TodayTasks,setShowModal}:props) {
+function TodayViewContainer({setUpdatetTask,TodayTasks,setShowModal}:props) {
   return (
 
   <div style={{height:"92%"}} className='w-full  mothDayBoxShadow'>
@@ -19,10 +20,8 @@ function TodayViewContainer({TodayTasks,setShowModal}:props) {
         </div>
     </div>
 
-
-
     {TodayTasks.map((task)=>{
-        return <TodayTask task={task}/>
+        return <TodayTask setUpdatetTask={setUpdatetTask}  task={task}/>
     })}
 
 

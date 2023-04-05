@@ -3,36 +3,36 @@ import {ref,set,get} from "firebase/database"
 import {db} from "../firebaseConfig"
 import {task} from "../../interfaces"
 import uuid from 'react-uuid'
-import DailyTask from './DayView/DailyTask'
 interface props
 {
      setTodayTasks: React.Dispatch<React.SetStateAction<task[]>>
      TodayTasks: task[]
-     setShowModal: React.Dispatch<React.SetStateAction<boolean>>
      SelectedCategory:number
      Today:string
-     setDailyDay:React.Dispatch<React.SetStateAction<string | undefined>>
+     setUpdatetTask: React.Dispatch<React.SetStateAction<task | undefined>>
+     UpdatedTask:task
      DailyDay: string | undefined
      DailyTaks: task[]
      setDailyTaks: React.Dispatch<React.SetStateAction<task[]>>
 }
-function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setTodayTasks,SelectedCategory,Today}:props) {
-    const [FromTime, setFromTime] = useState('');
-    const [ToTime, setToTime] = useState('');
-    const [Importance, setImportance] = useState("Low");
-    const [Name, setName] = useState('');
+function UpdateTaskModal({setDailyTaks,DailyTaks,DailyDay,UpdatedTask,setUpdatetTask,TodayTasks,setTodayTasks,SelectedCategory,Today}:props) {
+    const [FromTime, setFromTime] = useState(UpdatedTask.FromTime);
+    const [ToTime, setToTime] = useState(UpdatedTask.ToTime);
+    const [Importance, setImportance] = useState(UpdatedTask.Importance);
+    const [Name, setName] = useState(UpdatedTask.Importance);
     const [Day, setDay] = useState('');
-    const [TaskDescription, setTaskDescription] = useState('');
+    const [TaskDescription, setTaskDescription] = useState(UpdatedTask.Description);
     function handleCloseModal(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if((e.target as HTMLDivElement).id !=="modal")
         {
-            setShowModal(false)
+            setUpdatetTask(undefined)
         }
-       }
+        
+      }
       function uploadToDatabse(task:task)
       {
           set(ref(db,"Tasks/"+task.Day+"/"+task.taskId),task)
-          setShowModal(false)
+          setUpdatetTask(undefined)
       }
   
       function handleSubmit() {
@@ -40,20 +40,24 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
         const fromminutes = parseInt(FromTime.slice(3,5))
         const toHours = parseInt(ToTime.slice(0,2))   
         const toMinutes = parseInt(ToTime.slice(3,5)) 
-        const taskId = uuid()
-        const newTask:task={Day:Day,FromTime:FromTime,Importance:Importance,Name:Name,ToTime:ToTime,taskId:taskId,Description:TaskDescription}
+        const newTask:task={Day:Day,FromTime:FromTime,Importance:Importance,Name:Name,ToTime:ToTime,taskId:UpdatedTask.taskId,Description:TaskDescription}
         if(FromTime && ToTime && Importance && Name && Day  )
         {
             if (formHours === toHours )
             {
                 if(fromminutes < toMinutes)
                 {
-                    uploadToDatabse(newTask)
-                    setShowModal(false)
                     if(SelectedCategory === 1)
                     {
-                        const arr = TodayTasks
+                        uploadToDatabse(newTask)
+                        const arr = []
                         arr.push(newTask)
+                        TodayTasks.map((task)=>{
+                            if(task.taskId !== UpdatedTask.taskId)
+                            {
+                                arr.push(task)
+                            }
+                        })
                         arr.sort((a, b) => {
                             const aTime = new Date(`1970-01-01T${a.FromTime}`);
                             const bTime = new Date(`1970-01-01T${b.FromTime}`);
@@ -63,37 +67,56 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
                     }
                     else if(SelectedCategory === 2)
                     {
-                        const arr = DailyTaks
+                        uploadToDatabse(newTask)
+                        const arr = []
                         arr.push(newTask)
+                        DailyTaks.map((task)=>{
+                            if(task.taskId !== UpdatedTask.taskId)
+                            {
+                                arr.push(task)
+                            }
+                        })
                         arr.sort((a, b) => {
                             const aTime = new Date(`1970-01-01T${a.FromTime}`);
                             const bTime = new Date(`1970-01-01T${b.FromTime}`);
                             return aTime.getTime() - bTime.getTime();
                           });
-                          setDailyTaks(arr)
+                        setDailyTaks(arr)
                     }
 
                 }
             }
             else if( formHours < toHours)
             { 
-                uploadToDatabse(newTask)
-                setShowModal(false)
                 if(SelectedCategory === 1)
                 {
-                    const arr = TodayTasks
+                    uploadToDatabse(newTask)
+                    const arr = []
                     arr.push(newTask)
+                    TodayTasks.map((task)=>{
+                        if(task.taskId !== UpdatedTask.taskId)
+                        {
+                            arr.push(task)
+                        }
+                    })
                     arr.sort((a, b) => {
                         const aTime = new Date(`1970-01-01T${a.FromTime}`);
                         const bTime = new Date(`1970-01-01T${b.FromTime}`);
                         return aTime.getTime() - bTime.getTime();
                       });
-                      setTodayTasks(arr)
+                    setTodayTasks(arr)
                 }
                 else if(SelectedCategory === 2)
                 {
-                    const arr = DailyTaks
+                    uploadToDatabse(newTask)
+                    const arr = []
                     arr.push(newTask)
+                    DailyTaks.map((task)=>{
+                        if(task.taskId !== UpdatedTask.taskId)
+                        {
+                            arr.push(task)
+                        }
+                    })
                     arr.sort((a, b) => {
                         const aTime = new Date(`1970-01-01T${a.FromTime}`);
                         const bTime = new Date(`1970-01-01T${b.FromTime}`);
@@ -101,24 +124,66 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
                       });
                     setDailyTaks(arr)
                 }
-
             }
+
         }
 
-        if(SelectedCategory){}
       }
       
+     function handleSubmitDelete()
+      {
+        if(SelectedCategory === 1)
+        {
+            set(ref(db,"Tasks/"+UpdatedTask.Day+"/"+UpdatedTask.taskId),null)
+            const arr:task[] = []
+            TodayTasks.map((task)=>{
+                if(task.taskId !== UpdatedTask.taskId)
+                {
+                    arr.push(task)
+                }
+            })
+            arr.sort((a, b) => {
+                const aTime = new Date(`1970-01-01T${a.FromTime}`);
+                const bTime = new Date(`1970-01-01T${b.FromTime}`);
+                return aTime.getTime() - bTime.getTime();
+              });
+            setTodayTasks(arr)
+            setUpdatetTask(undefined)
+        }
+        else if(SelectedCategory === 2)
+        {
+            set(ref(db,"Tasks/"+UpdatedTask.Day+"/"+UpdatedTask.taskId),null)
+            const arr:task[] = []
+            DailyTaks.map((task)=>{
+                if(task.taskId !== UpdatedTask.taskId)
+                {
+                    arr.push(task)
+                }
+            })
+            arr.sort((a, b) => {
+                const aTime = new Date(`1970-01-01T${a.FromTime}`);
+                const bTime = new Date(`1970-01-01T${b.FromTime}`);
+                return aTime.getTime() - bTime.getTime();
+              });
+            setDailyTaks(arr)
+            setUpdatetTask(undefined)
+        }
+
+
+      }
+
+
       useEffect(()=>{
 
-        if(SelectedCategory ===1){
+        if(SelectedCategory === 1){
             setDay(Today)
         }
-        else if(SelectedCategory === 2 && DailyDay)
+        else if (SelectedCategory === 2 &&DailyDay)
         {
             setDay(DailyDay)
         }
 
-      },[SelectedCategory])
+      },[UpdatedTask])
 
 
   return (
@@ -134,22 +199,22 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
 
             <div  id="modal"  className='w-full h-16  flex items-center justify-around flex-col'>
                 <p  id="modal" className='text-xl font-semibold'>From</p>
-                <input type='time' onChange={(e)=>{setFromTime(e.target.value)}} id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
+                <input type='time' value={FromTime} onChange={(e)=>{setFromTime(e.target.value)}} id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
             </div>
 
             <div  id="modal"  className='w-full h-16  flex items-center justify-around flex-col'>
                 <p  id="modal" className='text-xl font-semibold'>Name</p>
-                <input onChange={(e)=>{setName(e.target.value)}}  type='text' id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
+                <input value={Name} onChange={(e)=>{setName(e.target.value)}}  type='text' id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
             </div>
 
             <div className='w-full h-16  flex items-center justify-around flex-col'>
                 <p  id="modal" className='text-xl font-semibold'>To</p>
-                <input onChange={(e)=>{setToTime(e.target.value)}} type='time' id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
+                <input  value={ToTime} onChange={(e)=>{setToTime(e.target.value)}} type='time' id="modal" className='w-2/4 shadow-xl bg-blue-100 h-12'/>
             </div>
 
             <div id="modal"   className='w-full h-16  flex items-center justify-around flex-col'>
                 <p  id="modal" className='text-xl font-semibold'>Importanece</p>
-                <select id="modal" onChange={(e)=>{setImportance(e.target.value)}} className='w-2/4 shadow-xl bg-blue-100 h-12'>
+                <select value={Importance} id="modal" onChange={(e)=>{setImportance(e.target.value)}} className='w-2/4 shadow-xl bg-blue-100 h-12'>
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
                     <option value="Hihg">Hihg</option>
@@ -165,10 +230,14 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
             </div>
 
             <div id="modal"   className='w-full h-32  flex items-center justify-around flex-col'>
-                 <p  id="modal" className='text-xl font-semibold'>Description</p>
-                <textarea onChange={(e)=>{setTaskDescription(e.target.value)}} id="modal" className='w-3/4 h-24 bg-blue-100 resize-none'></textarea>
+                 <p  id="modal"  className='text-xl font-semibold'>Description</p>
+                <textarea value={TaskDescription} onChange={(e)=>{setTaskDescription(e.target.value)}} id="modal" className='w-3/4 h-24 bg-blue-100 resize-none'></textarea>
             </div>
-            <button    onClick={()=>{handleSubmit()}} className='w-72 h-10 bg-blue-600 font-bold rounded text-xl text-white' id="modal">Add</button>
+
+            <div className='w-full h-14 flex items-center justify-around'>
+                <button    onClick={()=>{handleSubmit()}} className='w-72 h-10 bg-blue-600 font-bold rounded text-xl text-white' id="modal">Update</button>
+                <button    onClick={()=>{handleSubmitDelete()}} className='w-72 h-10 bg-blue-600 font-bold rounded text-xl text-white' id="modal">Delete</button>
+            </div>
 
         </div>
 
@@ -176,4 +245,4 @@ function Modal({setDailyTaks,DailyTaks,DailyDay,setShowModal,TodayTasks,setToday
   )
 }
 
-export default Modal
+export default UpdateTaskModal
