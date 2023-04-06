@@ -6,9 +6,9 @@ import { db } from '../../firebaseConfig'
 interface props
 {
     UpdateTask: task | undefined
-    setShowUpdateTaskModal: React.Dispatch<React.SetStateAction<boolean>>
+    setShowUpdateTaskModalMonth: React.Dispatch<React.SetStateAction<boolean>>
 }
-function UpdateWeekTaskModal({UpdateTask,setShowUpdateTaskModal}:props) {
+function UpdateTaskInAMonth({UpdateTask,setShowUpdateTaskModalMonth}:props) {
     useEffect(()=>{
         console.log(UpdateTask)
     },[UpdateTask])
@@ -21,14 +21,14 @@ function UpdateWeekTaskModal({UpdateTask,setShowUpdateTaskModal}:props) {
     function handleCloseModal(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         if((e.target as HTMLDivElement).id !=="modal")
         {
-            setShowUpdateTaskModal(false)
+            setShowUpdateTaskModalMonth(false)
         }
         
       }
       function uploadToDatabse(task:task)
       {
           set(ref(db,"Tasks/"+task.Day+"/"+task.taskId),task)
-          setShowUpdateTaskModal(false)
+          setShowUpdateTaskModalMonth(false)
       }
   
       function handleSubmit() {
@@ -56,7 +56,7 @@ function UpdateWeekTaskModal({UpdateTask,setShowUpdateTaskModal}:props) {
 
                    
                 }
-                setShowUpdateTaskModal(false)
+                setShowUpdateTaskModalMonth(false)
     
             }
         }
@@ -68,7 +68,7 @@ function UpdateWeekTaskModal({UpdateTask,setShowUpdateTaskModal}:props) {
       {
      
             set(ref(db,"Tasks/"+UpdateTask?.Day+"/"+UpdateTask?.taskId),null)
-            setShowUpdateTaskModal(false)
+            setShowUpdateTaskModalMonth(false)
         }
 
 
@@ -129,4 +129,4 @@ function UpdateWeekTaskModal({UpdateTask,setShowUpdateTaskModal}:props) {
           )
             }
 
-export default UpdateWeekTaskModal
+export default UpdateTaskInAMonth

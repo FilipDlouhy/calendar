@@ -8,19 +8,61 @@ interface props
     setDailyDay: React.Dispatch<React.SetStateAction<string | undefined>>
     setDaysInAWeek: React.Dispatch<React.SetStateAction<string[]>>
     DaysInAWeek: string[]
-
+    setMonthForMonthView: React.Dispatch<React.SetStateAction<string>>
+    MonthView: string
 }
 
 
-function Navbar({DaysInAWeek,setDailyDay,DailyDay,SelectedCategory,setSelectedCategory,setDaysInAWeek}:props) {
+function Navbar({ MonthView,setMonthForMonthView,DaysInAWeek,setDailyDay,DailyDay,SelectedCategory,setSelectedCategory,setDaysInAWeek}:props) {
 
 
-  const [Day,setDay] = useState<number>()
   const [Mont,setMonth] = useState<string>("")
   const [MontFromTO,setMonthFromTO] = useState<string>("")
     useEffect(()=>{
       if(SelectedCategory === 4)
       {
+        const newDate = new Date();
+        let Month:string = ""
+        switch(newDate.toDateString().slice(4,7)) {
+          case "Jan":
+            Month= "January"
+            break;
+          case "Feb":
+            Month="February"
+            break;
+          case "Mar":
+            Month="March"
+            break;
+          case "Apr":
+            Month="April"
+            break;
+          case "May":
+            Month="May"
+            break;
+          case "Jun":
+            Month="June"
+            break;
+          case "Jul":
+            Month="July"
+            break;
+          case "Aug":
+            Month="August"
+            break;
+          case "Sep":
+            Month="September"
+            break;
+          case "Oct":
+             Month="October"
+            break;
+          case "Nov":
+            Month="November"
+            break;
+          case "Dec":
+            Month="December"
+            break;
+    
+        }
+        setMonthForMonthView(Month)
       }
       else if (SelectedCategory === 3)
       {
@@ -216,6 +258,91 @@ function Navbar({DaysInAWeek,setDailyDay,DailyDay,SelectedCategory,setSelectedCa
 
     }
 
+    function nextMonth(Month:string){
+      switch(Month.slice(0,3)) {
+        case "Jan":
+          Month= "February"
+          break;
+        case "Feb":
+          Month="March"
+          break;
+        case "Mar":
+          Month="April"
+          break;
+        case "Apr":
+          Month="May"
+          break;
+        case "May":
+          Month="June"
+          break;
+        case "Jun":
+          Month="July"
+          break;
+        case "Jul":
+          Month="August"
+          break;
+        case "Aug":
+          Month="September"
+          break;
+        case "Sep":
+          Month="October"
+          break;
+        case "Oct":
+           Month="November"
+          break;
+        case "Nov":
+          Month="December"
+          break;
+        case "Dec":
+          Month="January"
+          break;
+  
+      }
+      setMonthForMonthView(Month)
+    }
+    function prevMonth(Month:string){
+              switch(Month.slice(0,3)) {
+          case "Jan":
+            Month= "December"
+            break;
+          case "Feb":
+            Month="January"
+            break;
+          case "Mar":
+            Month="February"
+            break;
+          case "Apr":
+            Month="March"
+            break;
+          case "May":
+            Month="April"
+            break;
+          case "Jun":
+            Month="May"
+            break;
+          case "Jul":
+            Month="June"
+            break;
+          case "Aug":
+            Month="July"
+            break;
+          case "Sep":
+            Month="August"
+            break;
+          case "Oct":
+             Month="September"
+            break;
+          case "Nov":
+            Month="October"
+            break;
+          case "Dec":
+            Month="November"
+            break;
+    
+        }
+        setMonthForMonthView(Month)
+    }
+
     function nextDay(today:string  ) {
       const date = new Date(today);
       const tomorrow = new Date(today);
@@ -237,14 +364,14 @@ function Navbar({DaysInAWeek,setDailyDay,DailyDay,SelectedCategory,setSelectedCa
             return  <div className='w-2/4 h-full flex items-center justify-center'>
             
                     <div  className='h-full w-24 flex items-center justify-center'>
-                    <p className='text-lg text-blue-500 font-bold hover:text-green-500 duration-300 cursor-pointer'>Previous</p>
+                    <p onClick={()=>{prevMonth(MonthView)}} className='text-lg text-blue-500 font-bold hover:text-green-500 duration-300 cursor-pointer'>Previous</p>
                     </div>
             
                     <div className='w-52 h-full flex-col flex items-center justify-center'>
-                    <p className='font-bold text-2xl '>August</p>
+                    <p className='font-bold text-2xl '>{MonthView}</p>
                 </div>
             <div className='h-full w-24 flex items-center justify-center'>
-              <p className='text-lg text-blue-500 font-bold hover:text-green-500 duration-300 cursor-pointer'>Next</p>
+              <p onClick={()=>{nextMonth(MonthView)}} className='text-lg text-blue-500 font-bold hover:text-green-500 duration-300 cursor-pointer'>Next</p>
             </div>
           </div>
         }
